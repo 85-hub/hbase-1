@@ -47,11 +47,14 @@ public class StudentList {
         ResultScanner scanner = table.getScanner(scan);
         Iterator<Result> results = scanner.iterator();
         while (results.hasNext()){
-            Result r = results.next();
-            for (Cell cell : r.listCells()) {
-                String column = Bytes.toString(CellUtil.cloneQualifier(cell));
-                String value = Bytes.toString(CellUtil.cloneValue(cell));
-                System.out.println(column + "：" + value);
+            Result result = results.next();
+            for (Cell cell : result.listCells()) {
+                String rowkey=Bytes.toString(CellUtil.cloneRow(cell));//取到行键
+                long timestamp=cell.getTimestamp();//取时间戳
+                String fname=Bytes.toString(CellUtil.cloneFamily(cell));//取到列族名
+                String qualifier=Bytes.toString(CellUtil.cloneQualifier(cell));//取修饰名，即列名
+                String value=Bytes.toString(CellUtil.cloneValue(cell)); //取值
+                System.out.println("rowkey=="+rowkey+"---timestamp=="+timestamp+"---qualifier=="+fname+"=>"+qualifier+"---value=="+value);
             }
         }
         scanner.close();
@@ -122,7 +125,9 @@ public class StudentList {
         appendData(tableName,"003","Home","Province","Shanghai");
 
         scan(tableName);
+
         getProvince(tableName);
+        System.out.println("Select Province successfully!");
         appendData(tableName,"001","Courses","English","95");
         appendData(tableName,"002","Courses","English","85");
         appendData(tableName,"003","Courses","English","98");
